@@ -6,9 +6,7 @@ export const Form = () => {
 
 	const { errors, isValid } = formState;
 
-
 	const passwordValue = watch("password");
-
 
 	const validationRules = {
 		email: { required: "Введите почту" },
