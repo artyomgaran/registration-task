@@ -27,3 +27,32 @@
 .errorLabel {
 	color: red;
 }
+
+
+.input {
+	width: 80%;
+	max-width: 300px;
+	padding: 10px 14px;
+	font-size: 14px;
+	border: 2px solid #ccc;
+	border-radius: 6px;
+	transition: all 0.3s ease;
+	outline: none;
+	display: block;
+	margin-bottom: 12px;
+}
+
+
+.input:hover {
+	border-color: #888;
+}
+
+.input:focus {
+	border-color: #007bff;
+	box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+}
+
+.errorInput {
+	border: 2px solid red;
+	background-color: #ffe5e5;
+}

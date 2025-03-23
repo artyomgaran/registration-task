@@ -1,77 +1,57 @@
-import { useState } from 'react';
-import { Input } from '../Input/Input';
-import styles from './form.module.css';
-import { useStore } from '../../hooks/useStore';
-
+import { useForm } from "react-hook-form";
+import styles from "./form.module.css";
 
 export const Form = () => {
-	const { state, updateState, resetState } = useStore();
-	const [error, setError] = useState(null)
+	const { register, handleSubmit, watch, formState } = useForm();
+
+	const { errors, isValid } = formState;
 
 
-	const onSubmit = (event) => {
-		event.preventDefault();
-		if (!state.password) {
-			setError('Введите пароль');
-			return
-		}
-		if (!state.repeatPassword) {
-			setError('Повторите пароль');
-			return;
-		}
+	const passwordValue = watch("password");
 
-		const entries = Object.entries(state).slice(0, 2)
-		const formData = Object.fromEntries(entries);
-		console.log(formData);
-		resetState();
-		setError(null);
+
+	const validationRules = {
+		email: { required: "Введите почту" },
+		password: {
+			required: "Введите пароль",
+			minLength: { value: 6, message: "Минимум 6 символов" },
+		},
+		repeatPassword: {
+			required: "Повторите пароль",
+			validate: (value) => value === passwordValue || "Пароли не совпадают",
+		},
 	};
 
-	const onChange = ({ target }) => {
-		updateState(target.name, target.value);
-	};
-
-	const onBlur = () => {
-		if (!state.email) {
-			setError('Введите почту');
-		} else if (state.password && state.repeatPassword && state.password !== state.repeatPassword) {
-			setError('Пароли не совпадают');
-		} else {
-			setError(null)
-		}
-
+	const onSubmit = (formData) => {
+		console.log("Данные формы:", formData);
 	};
 
 	return (
-		<form className={styles.form} onSubmit={onSubmit}>
-			{error && <div className={styles.errorLabel}>{error}</div>}
-			<Input
-				type="email"
-				name="email"
-				value={state.email}
-				placeholder="Почта"
-				onChange={onChange}
-				onBlur={onBlur}
-			/>
+		<form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+			{errors.email && <div className={styles.errorLabel}>{errors.email.message}</div>}
+			{errors.password && <div className={styles.errorLabel}>{errors.password.message}</div>}
+			{errors.repeatPassword && <div className={styles.errorLabel}>{errors.repeatPassword.message}</div>}
 
-			<Input
+			<input
+				className={styles.input}
+				type="email" placeholder="Почта"
+				{...register("email", validationRules.email)}
+			/>
+			<input
+				className={styles.input}
 				type="password"
-				name="password"
-				value={state.password}
 				placeholder="Пароль"
-				onChange={onChange}
-				onBlur= {onBlur}
+				{...register("password", validationRules.password)}
 			/>
-
-			<Input
+			<input
+				className={styles.input}
 				type="password"
-				name="repeatPassword"
-				value={state.repeatPassword}
 				placeholder="Повторите пароль"
-				onChange={onChange}
-				onBlur= {onBlur}
+				{...register("repeatPassword", validationRules.repeatPassword)}
 			/>
-		<button type="submit" className={styles.button} disabled={!!error}>Зарегистрироваться</button>
+			<button type="submit" className={styles.button} disabled={!isValid}>
+				Зарегистрироваться
+			</button>
 		</form>
 	);
 };
